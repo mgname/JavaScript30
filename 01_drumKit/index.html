@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="keys">
+        <div data-key="65" class="key">
+            <kbd>A</kbd>
+            <span class="sound">clap</span>
+        </div>
+        <div data-key="83" class="key">
+            <kbd>S</kbd>
+            <span class="sound">hihat</span>
+        </div>
+        <div data-key="68" class="key">
+            <kbd>D</kbd>
+            <span class="sound">kick</span>
+        </div>
+        <div data-key="70" class="key">
+            <kbd>F</kbd>
+            <span class="sound">openhat</span>
+        </div>
+        <div data-key="71" class="key">
+            <kbd>G</kbd>
+            <span class="sound">boom</span>
+        </div>
+        <div data-key="72" class="key">
+            <kbd>H</kbd>
+            <span class="sound">ride</span>
+        </div>
+        <div data-key="74" class="key">
+            <kbd>J</kbd>
+            <span class="sound">snare</span>
+        </div>
+        <div data-key="75" class="key">
+            <kbd>K</kbd>
+            <span class="sound">tom</span>
+        </div>
+        <div data-key="76" class="key">
+            <kbd>L</kbd>
+            <span class="sound">tink</span>
+        </div>
+    </div>
+
+    <audio data-key="65" src="./sounds/clap.wav"></audio>
+    <audio data-key="83" src="./sounds/hihat.wav"></audio>
+    <audio data-key="68" src="./sounds/kick.wav"></audio>
+    <audio data-key="70" src="./sounds/openhat.wav"></audio>
+    <audio data-key="71" src="./sounds/boom.wav"></audio>
+    <audio data-key="72" src="./sounds/ride.wav"></audio>
+    <audio data-key="74" src="./sounds/snare.wav"></audio>
+    <audio data-key="75" src="./sounds/tom.wav"></audio>
+    <audio data-key="76" src="./sounds/tink.wav"></audio>
+
+    <script>
+        // 1.按下按键的时候，播放对应的声音
+        window.addEventListener('keydown' , event => {
+            const audio = document.querySelector(`audio[data-key="${event.keyCode}"]`);
+            const key = document.querySelector(`div[data-key="${event.keyCode}"]`);
+            // 没有按键对应的audio则退出
+            if(!audio) return;
+            // console.log([audio]);   // 用数组输出能看到html元素的属性
+            // 将当前播放时间置为0，每次按下按键都重新播放声音，避免按下按键后继续播放上次播放的位置
+            audio.currentTime = 0;
+            audio.play();
+
+            // 2.按下按键的时候，改变该按键的显示效果
+            // console.log([key]);
+            key.classList.toggle('playing');
+            // 因为变换设置了0.07s的过渡，所以设置70ms之后移除playing，但因为异步操作可能出现问题，所以不使用
+            // setTimeout(() => {
+            //     key.classList.remove('playing');
+            // } , 70);
+            
+        });
+
+
+        // 3.按键效果转换之后，恢复到最初状态
+        function removePlaying(event) {
+            console.log(event); // TransitionEvent 过渡事件
+            // event.propertyName 获取当前过渡的属性名
+            if (event.propertyName !== 'transform') return;
+            this.classList.remove('playing');
+        }
+
+        const keys = document.querySelectorAll('.key');
+        keys.forEach(key => {
+            // 监听过渡结束事件
+            key.addEventListener('transitionend' , removePlaying);
+        });
+    </script>
+</body>
+</html>
