@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /*  
+            :root 这个 CSS 伪类匹配文档树的根元素，对于 HTML 来说，:root 表示 <html> 元素
+        */
+        :root {
+            /* 在此声明全局变量 */
+            /* 改变控件的值只需改变变量的值 */
+            --spacing: 5px;
+            --blur: 2px;
+            --base: #ffc600;
+        }
+        
+
+        body {
+            text-align: center;
+            background-color: #193549;
+            color: white;
+            font-family: sans-serif;
+            font-weight: 100;
+            font-size: 50px;
+        }
+
+        .controls {
+            margin-bottom: 50px;
+        }
+        
+        input {
+            width: 100px;
+        }
+
+        img {
+            /* 通过改变padding来改变背景颜色的范围 */
+            /* 调用变量 */
+            padding: var(--spacing);
+            background-color: var(--base);
+            filter: blur(var(--blur));
+        }
+
+        .hl {
+            color: var(--base);
+        }
+    </style>
+</head>
+<body>
+    <h2>Update CSS Variables with <span class="hl">JS</span></h2>
+
+    <div class="controls">
+        <label for="spacing">Spacing:</label>
+        <input type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+
+        <label for="blur">Blur:</label>
+        <!-- 使用data-sizing代表要设置的属性的单位 -->
+        <input type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+        <label for="base">Base Color:</label>
+        <input type="color" name="base" value="#ffc600">
+    </div>
+
+    <img src="https://picsum.photos/800/500" alt="">
+
+    <script>
+        const inputs = document.querySelectorAll('.controls input');
+        // const img = document.querySelector('img');
+        // const title = document.querySelector('.hl');
+
+        function handUpdate() {
+            /* 这样更改样式比较繁琐，可以使用css变量，改变控件的值只需改变变量的值 */
+            // if (this.name === 'spacing') {
+            //     img.style.padding = this.value + 'px';
+            // }
+            // if (this.name === 'blur') {
+            //     img.style.filter = `blur(${this.value}px)`;
+            // }
+            // if (this.name === 'base') {
+            //     img.style.backgroundColor = this.value;
+            //     title.style.color = this.value;
+            // }
+
+
+            // dataset中存放了该DOM对象的自定义属性和属性值
+            // 没有单位（没有自定义属性），存放空字符串
+            const suffix = this.dataset.sizing || '';
+
+            // document.documentElement引用的是html整个文档对象
+            // style.setProperty(propertyname, value)：设置一个新的 CSS 属性
+            document.documentElement.style.setProperty(`--${this.name}` , this.value + suffix);
+        }
+
+        inputs.forEach(input => input.addEventListener('change' , handUpdate));
+    </script>
+</body>
+</html>
