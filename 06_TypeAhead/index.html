@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <form class="search-form">
+        <input type="text" class="search" placeholder="City or State">
+        <ul class="suggestions">
+            <li>Filter for a city</li>
+            <li>or a state</li>
+        </ul>
+    </form>
+
+    <script>
+        const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+        // 1.获取数据
+        const cities = [];
+        fetch(endpoint)
+            .then(res => res.json())
+            .then(data => {
+                // 将data数组解构push进cities数组中
+                cities.push(...data);
+            });
+
+            
+        // 2.过滤数据，返回内容符合正则的数组
+        function findMatches(wordsToMatch , cities) {
+            return cities.filter(place => {
+                // 需要传入变量，使用构造函数生成正则
+                const regex = new RegExp(wordsToMatch , 'ig');
+                return place.city.match(regex) || place.state.match(regex);
+            });
+        }
+
+        // 逗号分隔数字
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g , ',');
+        }
+
+        // 3.展示数据
+        function displayMatches() {
+            console.log(this.value);
+            const matchArray = findMatches(this.value , cities);
+            const html = matchArray.map(place => {
+
+                const regex = new RegExp(this.value , 'ig');
+                // 与搜索框中匹配到的字符串高亮显示，设置为hl类
+                // 匹配到的正则用后面的字符串替换
+                const cityName = place.city.replace(regex , `<span class="hl">${this.value}</span>`);
+                const stateName = place.state.replace(regex , `<span class="hl">${this.value}</span>`);
+
+                return `
+                    <li>
+                        <span class="name">${cityName} , ${stateName}</span>    
+                        <span class="population">${numberWithCommas(place.population)}</span>    
+                    </li>
+                `;
+                // 将数组转换成字符串，用''分隔
+            }).join('');
+
+            suggestions.innerHTML = html;
+        }
+
+        const searchInput = document.querySelector('.search');
+        searchInput.addEventListener('change' , displayMatches);
+        searchInput.addEventListener('keyup' , displayMatches);
+
+        const suggestions = document.querySelector('.suggestions');
+    </script>
+</body>
+</html>
